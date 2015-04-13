@@ -86,6 +86,8 @@ int main(void)
     glVertexAttribPointer(texCoordAttr, texCoordSize, GL_FLOAT, GL_FALSE,
                           vertexSize, texCoordOffset);
 
+    // time uniform
+    GLuint uniTime = glGetUniformLocation(shaderProgram, "time");
 
     // create textures
     GLuint tex[2];
@@ -129,6 +131,10 @@ int main(void)
 
         glClearColor(0x0, 0x0, 0x0, 0xFF);
         glClear(GL_COLOR_BUFFER_BIT);
+
+        clock_t uptime = clock() / (CLOCKS_PER_SEC / 1000);
+        /*fprintf(stderr, "%ld\n", uptime);*/
+        glUniform1f(uniTime, uptime);
 
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
