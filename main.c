@@ -55,23 +55,6 @@ int main(void)
     glBufferData(GL_ELEMENT_ARRAY_BUFFER,
             sizeof(elements), elements, GL_STATIC_DRAW);
 
-    // create texture
-    GLuint tex;
-    glGenTextures(1, &tex);
-    glBindTexture(GL_TEXTURE_2D, tex);
-
-    int w, h;
-    unsigned char* image =
-        SOIL_load_image("kitty.png", &w, &h, 0,SOIL_LOAD_RGB);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB,
-                 GL_UNSIGNED_BYTE, image);
-    SOIL_free_image_data(image);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
     // create shaders
     GLuint shaders[] = {
         readShaderFile("vertex.glsl", GL_VERTEX_SHADER),
@@ -80,6 +63,9 @@ int main(void)
 
     // create program and link shaders
     GLuint shaderProgram = createShaderProgram(2, shaders);
+
+
+    // specify the layout of the vertex data
 
     glBindFragDataLocation(shaderProgram, 0, "outColor");
     glLinkProgram(shaderProgram);
@@ -99,6 +85,41 @@ int main(void)
     glEnableVertexAttribArray(texCoordAttr);
     glVertexAttribPointer(texCoordAttr, texCoordSize, GL_FLOAT, GL_FALSE,
                           vertexSize, texCoordOffset);
+
+
+    // create textures
+    GLuint tex[2];
+    glGenTextures(2, tex);
+
+    // load images
+    int w, h;
+    unsigned char* image;
+
+    image = SOIL_load_image("kitty.png", &w, &h, 0, SOIL_LOAD_RGB);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, tex[0]);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB,
+                 GL_UNSIGNED_BYTE, image);
+    SOIL_free_image_data(image);
+    glUniform1i(glGetUniformLocation(shaderProgram, "texKitty"), 0);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    image = SOIL_load_image("puppy.png", &w, &h, 0, SOIL_LOAD_RGB);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, tex[1]);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB,
+                 GL_UNSIGNED_BYTE, image);
+    SOIL_free_image_data(image);
+    glUniform1i(glGetUniformLocation(shaderProgram, "texPuppy"), 1);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 
     int quit = 0;
@@ -121,7 +142,7 @@ int main(void)
     glDeleteBuffers(1, &vbo);
     glDeleteVertexArrays(1, &vao);
 
-    glDeleteTextures(1, &tex);
+    glDeleteTextures(2, tex);
 
     SDL_GL_DeleteContext(ctx);
     SDL_DestroyWindow(win);

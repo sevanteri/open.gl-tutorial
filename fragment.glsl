@@ -5,9 +5,12 @@ in vec2 Texcoord;
 
 out vec4 outColor;
 
-uniform sampler2D tex;
+uniform sampler2D texKitty;
+uniform sampler2D texPuppy;
 
 void main()
 {
-    outColor = texture(tex, Texcoord) * vec4(Color, Color, Color, 1.0);
+    vec4 colKitty = texture(texKitty, Texcoord);
+    vec4 colPuppy = texture(texPuppy, Texcoord);
+    outColor = mix(colKitty, colPuppy, 0.5);
 }
