@@ -4,8 +4,18 @@
 #include <SDL2/SDL.h>
 #include <GL/glew.h>
 
-static GLuint
-readShaderFile(const char* file, GLenum shaderType);
+static void
+printShaderInfo(GLuint shader)
+{
+    GLint length;
+    glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length);
+
+    if (length > 0) {
+        GLchar buffer[length];
+        glGetShaderInfoLog(shader, length, NULL, buffer);
+        fprintf(stderr, "%s\n", buffer);
+    }
+}
 
 int
 initEverything(SDL_Window **win, SDL_GLContext *ctx)
@@ -45,10 +55,9 @@ initEverything(SDL_Window **win, SDL_GLContext *ctx)
     return 0;
 }
 
-static GLuint
-readShaderFile(const char* file, GLenum shaderType)
+static GLchar*
+readShaderFile(const char* file)
 {
-    GLuint id;
     GLchar *buffer;
     int length;
 
@@ -72,44 +81,55 @@ readShaderFile(const char* file, GLenum shaderType)
         return 0;
     }
 
-    id = glCreateShader(shaderType);
+    return buffer;
 
-    glShaderSource(id, 1, (const GLchar **)&buffer, NULL);
+}
 
-    glCompileShader(id);
+static GLint
+compileShader(GLuint *id, char *buffer)
+{
+    glShaderSource(*id, 1, (const GLchar **)&buffer, NULL);
+
+    glCompileShader(*id);
 
     // check for errors
     GLint compiled;
-    glGetShaderiv(id, GL_COMPILE_STATUS, &compiled);
+    glGetShaderiv(*id, GL_COMPILE_STATUS, &compiled);
     if (compiled != GL_TRUE) {
-        fprintf(stderr, "Unable to compile shader '%s'\n", file);
-        char error[512];
-        glGetShaderInfoLog(id, 512, NULL, error);
-        fprintf(stderr, "%s\n", error);
-        glDeleteShader(id);
-        id = 0;
+        printShaderInfo(*id);
+        //glDeleteShader(*id);
+        //*id = 0;
     }
+
+    return compiled;
+}
+
+static GLuint
+compileShaderFile(const char* file, GLenum shaderType)
+{
+    GLuint id;
+    GLchar *buffer;
+
+    id = glCreateShader(shaderType);
+
+    buffer = readShaderFile(file);
+
+    compileShader(&id, buffer);
+
+    free(buffer);
 
     return id;
 }
 
-static int
-handleEvents(SDL_Event *ev)
+static GLint
+reloadShaderFile(GLuint *shader, char *file)
 {
-    while (SDL_PollEvent(ev)) {
-        switch (ev->type) {
-        case SDL_QUIT:
-            return 1;
-            break;
-        case SDL_KEYUP:
-            if (ev->key.keysym.sym == SDLK_ESCAPE)
-                return 1;
-            break;
-        default:
-            break;
-        }
-    }
-    return 0;
+    GLchar *buffer = readShaderFile(file);
+
+    GLint compiled = compileShader(shader, buffer);
+
+    free(buffer);
+    return compiled;
 }
 
 static GLuint

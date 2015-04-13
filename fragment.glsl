@@ -14,14 +14,16 @@ void main()
 {
     vec4 colKitty = texture(texKitty, Texcoord);
     //vec4 colPuppy = texture(texPuppy, Texcoord);
-    float a = 0.4;
+    float a = 0.6;
+    float b = a - Texcoord.y;
+    float c = Texcoord.y * 50;
     if (Texcoord.y <= a) {
         outColor = colKitty;
     } else {
         outColor = texture(texKitty,
             vec2(
                 //sin(time) * Texcoord.x,
-                Texcoord.x + (sin(Texcoord.y * 60.0 + time/2) / 30.0) * (a - Texcoord.y),
+                Texcoord.x + (sin(Texcoord.y * c + time/2) / (c/2)) * b,
                 a*2.0 - Texcoord.y
             )
         );

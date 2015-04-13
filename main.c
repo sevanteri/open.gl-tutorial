@@ -57,9 +57,11 @@ int main(void)
 
     // create shaders
     GLuint shaders[] = {
-        readShaderFile("vertex.glsl", GL_VERTEX_SHADER),
-        readShaderFile("fragment.glsl", GL_FRAGMENT_SHADER)
+        compileShaderFile("vertex.glsl", GL_VERTEX_SHADER),
+        compileShaderFile("fragment.glsl", GL_FRAGMENT_SHADER)
     };
+
+    GLuint *fragmentShader = &shaders[1];
 
     // create program and link shaders
     GLuint shaderProgram = createShaderProgram(2, shaders);
@@ -127,7 +129,27 @@ int main(void)
     int quit = 0;
     SDL_Event ev;
     while (!quit) {
-        quit = handleEvents(&ev);
+        while (SDL_PollEvent(&ev)) {
+            switch (ev.type) {
+            case SDL_QUIT:
+                quit = 1;
+                break;
+            case SDL_KEYUP:
+                if (ev.key.keysym.sym == SDLK_ESCAPE)
+                    return 1;
+                else if (ev.key.keysym.sym == SDLK_RETURN) {
+                    if(reloadShaderFile(fragmentShader,
+                                        "fragment.glsl") == GL_TRUE)
+                    {
+                        glLinkProgram(shaderProgram);
+                        glUseProgram(shaderProgram);
+                    }
+                }
+                break;
+            default:
+                break;
+            }
+        }
 
         glClearColor(0x0, 0x0, 0x0, 0xFF);
         glClear(GL_COLOR_BUFFER_BIT);
