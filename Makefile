@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS= --std=c11 -Wall -DGLEW_STATIC -pedantic
-LDLIBS= -lSDL2 -lGLEW -lGL -lm -lSOIL
+LDLIBS= -lSDL2 -lGLEW -lGL -lm -lSOIL -lrt
 
 OBJS = *.c
 
