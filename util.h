@@ -86,17 +86,20 @@ readShaderFile(const char* file)
 }
 
 static GLint
-compileShader(GLuint *id, char *buffer)
+compileShader(GLuint id, char *buffer)
 {
-    glShaderSource(*id, 1, (const GLchar **)&buffer, NULL);
+    //fprintf(stderr, "compiling: %d\n", id);
+    glShaderSource(id, 1, (const GLchar **)&buffer, NULL);
 
-    glCompileShader(*id);
+    glCompileShader(id);
 
     // check for errors
-    GLint compiled;
-    glGetShaderiv(*id, GL_COMPILE_STATUS, &compiled);
+    GLint compiled = GL_FALSE;
+    glGetShaderiv(id, GL_COMPILE_STATUS, &compiled);
     if (compiled != GL_TRUE) {
-        printShaderInfo(*id);
+        //fprintf(stderr, "not compiled\n");
+
+        printShaderInfo(id);
         //glDeleteShader(*id);
         //*id = 0;
     }
@@ -114,7 +117,7 @@ compileShaderFile(const char* file, GLenum shaderType)
 
     buffer = readShaderFile(file);
 
-    compileShader(&id, buffer);
+    compileShader(id, buffer);
 
     free(buffer);
 
@@ -122,7 +125,7 @@ compileShaderFile(const char* file, GLenum shaderType)
 }
 
 static GLint
-reloadShaderFile(GLuint *shader, char *file)
+reloadShaderFile(GLuint shader, char *file)
 {
     GLchar *buffer = readShaderFile(file);
 

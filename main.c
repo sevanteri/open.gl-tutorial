@@ -10,6 +10,34 @@
 
 #include "util.h"
 
+#include <watcher.h>
+
+struct fragReloadArgs {
+    char* filename;
+    GLuint shader;
+    GLuint prog;
+};
+Uint32 GL_RELOAD_FRAG;
+
+void*
+fragReloadFunc(void* arg) {
+    SDL_Event ev;
+    SDL_zero(ev);
+    ev.type = SDL_USEREVENT;
+    SDL_PushEvent(&ev);
+    return NULL;
+}
+
+void
+reload(GLuint shader, char* filename, GLuint prog)
+{
+    if(reloadShaderFile(shader, filename) == GL_TRUE)
+    {
+        glLinkProgram(prog);
+        glUseProgram(prog);
+    }
+}
+
 int main(void)
 {
 
@@ -17,6 +45,10 @@ int main(void)
     SDL_GLContext ctx;
 
     initEverything(&win, &ctx);
+
+    Uint32 GL_RELOAD_FRAG = SDL_RegisterEvents(1);
+    if (GL_RELOAD_FRAG == (Uint32) -1)
+        err(1, "Couldn't register SDL_Event");
 
     float vertices[] = {
     //  Position        Gray   TexCoords
@@ -61,7 +93,7 @@ int main(void)
         compileShaderFile("fragment.glsl", GL_FRAGMENT_SHADER)
     };
 
-    GLuint *fragmentShader = &shaders[1];
+    GLuint fragmentShader = shaders[1];
 
     // create program and link shaders
     GLuint shaderProgram = createShaderProgram(2, shaders);
@@ -126,6 +158,16 @@ int main(void)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 
+
+    watcher_t wat = {0};
+    struct fragReloadArgs reloadArgs= {
+        .filename="fragment.glsl",
+        .shader=fragmentShader,
+        .prog=shaderProgram
+    };
+    initWatcher(&wat, reloadArgs.filename, fragReloadFunc, NULL);
+    startWatcher(&wat);
+
     int quit = 0;
     SDL_Event ev;
     while (!quit) {
@@ -134,16 +176,13 @@ int main(void)
             case SDL_QUIT:
                 quit = 1;
                 break;
+            case SDL_USEREVENT:
+                reload(fragmentShader, "fragment.glsl", shaderProgram);
             case SDL_KEYUP:
                 if (ev.key.keysym.sym == SDLK_ESCAPE)
                     return 1;
                 else if (ev.key.keysym.sym == SDLK_RETURN) {
-                    if(reloadShaderFile(fragmentShader,
-                                        "fragment.glsl") == GL_TRUE)
-                    {
-                        glLinkProgram(shaderProgram);
-                        glUseProgram(shaderProgram);
-                    }
+                    reload(fragmentShader, "fragment.glsl", shaderProgram);
                 }
                 break;
             default:
