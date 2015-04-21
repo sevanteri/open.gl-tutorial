@@ -8,7 +8,7 @@
 #include <GL/glew.h>
 #include <SOIL/SOIL.h>
 
-#include "util.h"
+#include "common.h"
 
 #include <watcher.h>
 
