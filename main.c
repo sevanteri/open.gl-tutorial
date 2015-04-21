@@ -142,6 +142,10 @@ int main(void)
             case SDL_QUIT:
                 quit = 1;
                 break;
+            case SDL_WINDOWEVENT:
+                if (ev.window.event == SDL_WINDOWEVENT_RESIZED)
+                    resizeWindow(&ev.window);
+                break;
             case SDL_USEREVENT:
                 reloadShader(fragmentShader, "fragment.glsl", shaderProgram);
                 pointTextures(shaderProgram, textureLoc, tex, 2);

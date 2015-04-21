@@ -32,9 +32,9 @@ initEverything(SDL_Window **win, SDL_GLContext *ctx)
     SDL_GL_SetAttribute(SDL_MINOR_VERSION, 2);
 
     *win = SDL_CreateWindow("OGL testaus",
-                                       0, 0,
-                                       800, 600,
-                                       SDL_WINDOW_OPENGL);
+                            0, 0,
+                            800, 600,
+                            SDL_WINDOW_OPENGL);
     if (win == NULL)
         err(1, "win init fail");
 
@@ -193,4 +193,12 @@ pointTextures(GLint prog, char** locations, GLuint* textures, size_t s)
         glActiveTexture(GL_TEXTURE0 + i);
         glUniform1i(glGetUniformLocation(prog, locations[i]), i);
     }
+}
+
+void
+resizeWindow(SDL_WindowEvent *ev)
+{
+    Sint32 w = ev->data1;
+    Sint32 h = ev->data2;
+    glViewport(0, 0, w, h);
 }
