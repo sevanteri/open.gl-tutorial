@@ -3,6 +3,7 @@
 #include <err.h>
 #include <SDL2/SDL.h>
 #include <GL/glew.h>
+#include <SOIL/SOIL.h>
 
 static void
 printShaderInfo(GLuint shader)
@@ -150,4 +151,46 @@ deleteShaders(size_t shaders_size, GLuint* shaders)
 {
     for (int i=0; i<shaders_size; i++)
         glDeleteShader(shaders[i]);
+}
+
+void
+reloadShader(GLuint shader, char* filename, GLuint prog)
+{
+    if(reloadShaderFile(shader, filename) == GL_TRUE)
+    {
+        glLinkProgram(prog);
+        glUseProgram(prog);
+    }
+}
+
+void
+loadTextures(char** images, GLuint* textures, size_t s)
+{
+    int w, h;
+    unsigned char* image;
+    int i;
+
+    for (i=0; i<s; i++) {
+        image = SOIL_load_image(images[i], &w, &h, 0, SOIL_LOAD_RGB);
+        glActiveTexture(GL_TEXTURE0 + i);
+        glBindTexture(GL_TEXTURE_2D, textures[i]);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB,
+                     GL_UNSIGNED_BYTE, image);
+        SOIL_free_image_data(image);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    }
+}
+
+void
+pointTextures(GLint prog, char** locations, GLuint* textures, size_t s)
+{
+    int i;
+    for (i=0; i<s; i++) {
+        glActiveTexture(GL_TEXTURE0 + i);
+        glUniform1i(glGetUniformLocation(prog, locations[i]), i);
+    }
 }

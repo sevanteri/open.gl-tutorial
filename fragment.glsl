@@ -20,7 +20,7 @@ void main()
     float waveLength = Texcoord.y * 60;
 
     if (Texcoord.y <= waterSurface) {
-        outColor = colKitty;
+        outColor = mix(colKitty, colPuppy, 0.5);
     } else {
         vec2 asd = vec2(
             Texcoord.x + (
@@ -29,7 +29,7 @@ void main()
 
             waterSurface*2.0 - Texcoord.y
         );
-        outColor = texture(texKitty, asd);
+        outColor = mix(texture(texPuppy, asd), texture(texKitty, asd), 0.5);
     }
     //outColor = mix(colKitty, colPuppy, ((sin(time / 2) + 1.0) / 2.0));
 }

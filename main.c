@@ -28,16 +28,6 @@ fragReloadFunc(void* arg) {
     return NULL;
 }
 
-void
-reload(GLuint shader, char* filename, GLuint prog)
-{
-    if(reloadShaderFile(shader, filename) == GL_TRUE)
-    {
-        glLinkProgram(prog);
-        glUseProgram(prog);
-    }
-}
-
 int main(void)
 {
 
@@ -127,45 +117,21 @@ int main(void)
     GLuint tex[2];
     glGenTextures(2, tex);
 
-    // load images
-    int w, h;
-    unsigned char* image;
-
-    image = SOIL_load_image("kitty.png", &w, &h, 0, SOIL_LOAD_RGB);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, tex[0]);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB,
-                 GL_UNSIGNED_BYTE, image);
-    SOIL_free_image_data(image);
-    glUniform1i(glGetUniformLocation(shaderProgram, "texKitty"), 0);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    image = SOIL_load_image("puppy.png", &w, &h, 0, SOIL_LOAD_RGB);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, tex[1]);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB,
-                 GL_UNSIGNED_BYTE, image);
-    SOIL_free_image_data(image);
-    glUniform1i(glGetUniformLocation(shaderProgram, "texPuppy"), 1);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-
-
-    watcher_t wat = {0};
-    struct fragReloadArgs reloadArgs= {
-        .filename="fragment.glsl",
-        .shader=fragmentShader,
-        .prog=shaderProgram
+    char* textures[] = {
+        "kitty.png",
+        "puppy.png",
     };
-    initWatcher(&wat, reloadArgs.filename, fragReloadFunc, NULL);
+    char* textureLoc[] = {
+        "texKitty",
+        "texPuppy",
+    };
+
+    loadTextures(textures, tex, 2);
+    pointTextures(shaderProgram, textureLoc, tex, 2);
+
+    // fragment shader autoloading
+    watcher_t wat = {0};
+    initWatcher(&wat, "fragment.glsl", fragReloadFunc, NULL);
     startWatcher(&wat);
 
     int quit = 0;
@@ -177,12 +143,15 @@ int main(void)
                 quit = 1;
                 break;
             case SDL_USEREVENT:
-                reload(fragmentShader, "fragment.glsl", shaderProgram);
+                reloadShader(fragmentShader, "fragment.glsl", shaderProgram);
+                pointTextures(shaderProgram, textureLoc, tex, 2);
+                break;
             case SDL_KEYUP:
                 if (ev.key.keysym.sym == SDLK_ESCAPE)
                     return 1;
                 else if (ev.key.keysym.sym == SDLK_RETURN) {
-                    reload(fragmentShader, "fragment.glsl", shaderProgram);
+                    reloadShader(fragmentShader, "fragment.glsl", shaderProgram);
+                    pointTextures(shaderProgram, textureLoc, tex, 2);
                 }
                 break;
             default:
