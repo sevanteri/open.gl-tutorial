@@ -3,7 +3,6 @@
 #include <SDL2/SDL.h>
 #include <err.h>
 #include <math.h>
-#include <time.h>
 
 #include <GL/glew.h>
 #include <SOIL/SOIL.h>
@@ -12,11 +11,6 @@
 
 #include <watcher.h>
 
-struct fragReloadArgs {
-    char* filename;
-    GLuint shader;
-    GLuint prog;
-};
 Uint32 GL_RELOAD_FRAG;
 
 void*
@@ -166,7 +160,7 @@ int main(void)
         glClearColor(0x0, 0x0, 0x0, 0xFF);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        clock_t uptime = clock() / (CLOCKS_PER_SEC / 1000);
+        Uint32 uptime = SDL_GetTicks();
         /*fprintf(stderr, "%ld\n", uptime);*/
         glUniform1f(uniTime, uptime);
 

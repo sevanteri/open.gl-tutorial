@@ -15,7 +15,7 @@ void main()
     vec4 colKitty = texture(texKitty, Texcoord);
     vec4 colPuppy = texture(texPuppy, Texcoord);
 
-    float waterSurface = 0.72 + sin(time/18)*0.005;
+    float waterSurface = 0.72 + sin(time/1000)*0.005;
     float surfaceToBottom = waterSurface - Texcoord.y;
     float waveLength = Texcoord.y * 60;
 
@@ -24,7 +24,7 @@ void main()
     } else {
         vec2 asd = vec2(
             Texcoord.x + (
-                sin(Texcoord.y * waveLength + time/2) / (waveLength/2)
+                sin(Texcoord.y * waveLength + time/200) / (waveLength/2)
             ) * surfaceToBottom,
 
             waterSurface*2.0 - Texcoord.y
