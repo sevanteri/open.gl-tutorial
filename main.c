@@ -9,7 +9,7 @@
 
 #include "common.h"
 
-#include <watcher.h>
+#include "inotifyWatch.h"
 
 Uint32 GL_RELOAD_FRAG;
 
@@ -111,11 +111,11 @@ int main(void)
     GLuint tex[2];
     glGenTextures(2, tex);
 
-    char* textures[] = {
+    char *textures[] = {
         "kitty.png",
         "puppy.png",
     };
-    char* textureLoc[] = {
+    char *textureLoc[] = {
         "texKitty",
         "texPuppy",
     };
@@ -125,8 +125,7 @@ int main(void)
 
     // fragment shader autoloading
     watcher_t wat = {0};
-    initWatcher(&wat, "fragment.glsl", fragReloadFunc, NULL);
-    startWatcher(&wat);
+    watchFile(&wat, "fragment.glsl", fragReloadFunc, NULL);
 
     int quit = 0;
     SDL_Event ev;
@@ -161,12 +160,14 @@ int main(void)
         glClear(GL_COLOR_BUFFER_BIT);
 
         Uint32 uptime = SDL_GetTicks();
-        /*fprintf(stderr, "%ld\n", uptime);*/
+        /*fprintf(stderr, "%d\n", uptime);*/
         glUniform1f(uniTime, uptime);
 
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         SDL_GL_SwapWindow(win);
+
+        SDL_Delay(15);
 
     }
 
