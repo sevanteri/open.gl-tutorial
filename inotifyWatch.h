@@ -73,7 +73,8 @@ watchFile(watcher_t *watcher, char *filename, voidfunc func, void *arg)
     if ((watcher->epoll_fd = epoll_create1(0)) == -1)
         err(1, "epoll_create1 fail");
 
-    SDL_CreateThread(runWatcher, "inotify watcher", (void*)watcher);
+    SDL_Thread *th = SDL_CreateThread(runWatcher, "inotify watcher", (void*)watcher);
+    SDL_DetachThread(th);
 
     return 0;
 }

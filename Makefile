@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS= --std=c11 -Wall -DGLEW_STATIC -pedantic -O3 -pthread
+CFLAGS= --std=c11 -Wall -DGLEW_STATIC -pedantic -O3
 LDLIBS= -lSDL2 -lGLEW -lGL -lm -lSOIL -lrt
 
 OBJS = *.c
