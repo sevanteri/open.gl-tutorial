@@ -7,6 +7,8 @@
 #include <GL/glew.h>
 #include <SOIL/SOIL.h>
 
+#include <graphene-1.0/graphene.h>
+
 #include "common.h"
 
 #include "inotifyWatch.h"
@@ -107,21 +109,32 @@ int main(void)
     // time uniform
     GLuint uniTime = glGetUniformLocation(shaderProgram, "time");
 
+
+    // translation stuff
+    GLuint uniTrans = glGetUniformLocation(shaderProgram, "trans");
+
+    graphene_matrix_t trans;
+    graphene_matrix_init_identity(&trans);
+
+    graphene_vec3_t rotAxis;
+    graphene_vec3_init(&rotAxis, 0, 0, 1);
+
+
+
     // create textures
-    GLuint tex[2];
-    glGenTextures(2, tex);
+#define TEXCOUNT 1
+    GLuint tex[TEXCOUNT];
+    glGenTextures(TEXCOUNT, tex);
 
     char *textures[] = {
         "kitty.png",
-        "puppy.png",
     };
     char *textureLoc[] = {
         "texKitty",
-        "texPuppy",
     };
 
-    loadTextures(textures, tex, 2);
-    pointTextures(shaderProgram, textureLoc, tex, 2);
+    loadTextures(textures, tex, TEXCOUNT);
+    pointTextures(shaderProgram, textureLoc, tex, TEXCOUNT);
 
     // fragment shader autoloading
     watcher_t wat = {0};
@@ -129,6 +142,9 @@ int main(void)
 
     int quit = 0;
     SDL_Event ev;
+    float dt = 0;
+    float lasttime = 0;
+    float uptime = 0;
     while (!quit) {
         while (SDL_PollEvent(&ev)) {
             switch (ev.type) {
@@ -141,14 +157,14 @@ int main(void)
                 break;
             case SDL_USEREVENT:
                 reloadShader(fragmentShader, "fragment.glsl", shaderProgram);
-                pointTextures(shaderProgram, textureLoc, tex, 2);
+                pointTextures(shaderProgram, textureLoc, tex, TEXCOUNT);
                 break;
             case SDL_KEYUP:
                 if (ev.key.keysym.sym == SDLK_ESCAPE)
                     return 1;
                 else if (ev.key.keysym.sym == SDLK_RETURN) {
                     reloadShader(fragmentShader, "fragment.glsl", shaderProgram);
-                    pointTextures(shaderProgram, textureLoc, tex, 2);
+                    pointTextures(shaderProgram, textureLoc, tex, TEXCOUNT);
                 }
                 break;
             default:
@@ -159,9 +175,21 @@ int main(void)
         glClearColor(0x0, 0x0, 0x0, 0xFF);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        Uint32 uptime = SDL_GetTicks();
+        uptime = SDL_GetTicks()/1000.0;
         /*fprintf(stderr, "%d\n", uptime);*/
         glUniform1f(uniTime, uptime);
+
+        dt = uptime - lasttime;
+        lasttime = uptime;
+
+        // rotate
+        graphene_matrix_rotate(
+            &trans,
+            (dt) * 45,
+            &rotAxis
+        );
+        glUniformMatrix4fv(uniTrans, 1, GL_FALSE, (float *)&trans);
+
 
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
