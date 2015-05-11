@@ -129,9 +129,9 @@ int main(void)
     graphene_vec3_t up;
     graphene_matrix_init_look_at(
         &view,
-        graphene_vec3_init(&eye, 1.2, 1.2, 1.2),
+        graphene_vec3_init(&eye, 0.0, 0.0, -1.4),
         graphene_vec3_init(&center, 0, 0, 0),
-        graphene_vec3_init(&up, 0, 0, 1.0)
+        graphene_vec3_init(&up, 0.0, 1.0, 0.0)
     );
     glUniformMatrix4fv(uniView, 1, GL_FALSE, (float*)&view);
 
@@ -164,6 +164,11 @@ int main(void)
     float dt = 0;
     float lasttime = 0;
     float uptime = 0;
+
+    float spin = 0.0;
+    graphene_vec3_t spinAxis;
+    graphene_vec3_init(&spinAxis, 1, 0, 0);
+
     while (!quit) {
         while (SDL_PollEvent(&ev)) {
             switch (ev.type) {
@@ -185,6 +190,9 @@ int main(void)
                     reloadShader(fragmentShader, "fragment.glsl", shaderProgram);
                     pointTextures(shaderProgram, textureLoc, tex, TEXCOUNT);
                 }
+                else if (ev.key.keysym.sym == SDLK_SPACE) {
+                    spin = 10.0;
+                }
                 break;
             default:
                 break;
@@ -202,14 +210,19 @@ int main(void)
         lasttime = uptime;
 
         // rotate
-        graphene_matrix_rotate(
-            &model,
-            (dt) * 45,
-            &rotAxis
-        );
+        /*graphene_matrix_rotate(*/
+            /*&model,*/
+            /*(dt) * 45,*/
+            /*&rotAxis*/
+        /*);*/
 
-        GLfloat s = 1 + sin(uptime) * 0.01;
-        graphene_matrix_scale(&model, s,s,s);
+        /*GLfloat s = 1 + sin(uptime) * 0.01;*/
+        /*graphene_matrix_scale(&model, s,s,s);*/
+
+        if (spin > 0.0) {
+            graphene_matrix_rotate(&model, (spin/10) * dt * 45, &spinAxis);
+            spin -= dt;
+        }
 
         glUniformMatrix4fv(uniTrans, 1, GL_FALSE, (float *)&model);
 
