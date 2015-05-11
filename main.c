@@ -111,14 +111,33 @@ int main(void)
 
 
     // translation stuff
-    GLuint uniTrans = glGetUniformLocation(shaderProgram, "trans");
+    GLuint uniTrans = glGetUniformLocation(shaderProgram, "model");
 
-    graphene_matrix_t trans;
-    graphene_matrix_init_identity(&trans);
+    graphene_matrix_t model;
+    graphene_matrix_init_identity(&model);
 
     graphene_vec3_t rotAxis;
     graphene_vec3_init(&rotAxis, 0, 0, 1);
 
+    // 3D stuff!!
+    GLuint uniView = glGetUniformLocation(shaderProgram, "view");
+    GLuint uniProj = glGetUniformLocation(shaderProgram, "proj");
+
+    graphene_matrix_t view;
+    graphene_vec3_t eye;
+    graphene_vec3_t center;
+    graphene_vec3_t up;
+    graphene_matrix_init_look_at(
+        &view,
+        graphene_vec3_init(&eye, 1.2, 1.2, 1.2),
+        graphene_vec3_init(&center, 0, 0, 0),
+        graphene_vec3_init(&up, 0, 0, 1.0)
+    );
+    glUniformMatrix4fv(uniView, 1, GL_FALSE, (float*)&view);
+
+    graphene_matrix_t proj;
+    graphene_matrix_init_perspective(&proj, 45.0, 800.0/600.0,  1.0, 10.0);
+    glUniformMatrix4fv(uniProj, 1, GL_FALSE, (float*)&proj);
 
 
     // create textures
@@ -184,18 +203,22 @@ int main(void)
 
         // rotate
         graphene_matrix_rotate(
-            &trans,
+            &model,
             (dt) * 45,
             &rotAxis
         );
-        glUniformMatrix4fv(uniTrans, 1, GL_FALSE, (float *)&trans);
+
+        GLfloat s = 1 + sin(uptime) * 0.01;
+        graphene_matrix_scale(&model, s,s,s);
+
+        glUniformMatrix4fv(uniTrans, 1, GL_FALSE, (float *)&model);
 
 
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         SDL_GL_SwapWindow(win);
 
-        SDL_Delay(15);
+        SDL_Delay(15); //shit way to limit frames. don't do this.
 
     }
 
