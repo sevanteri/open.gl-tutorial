@@ -2,7 +2,7 @@
 
 #define M_PI 3.1415926535897932384626433832795
 
-in float Color;
+in vec3 Color;
 in vec2 Texcoord;
 
 out vec4 outColor;
@@ -28,6 +28,7 @@ void main()
 
             waterSurface*2.0 - Texcoord.y
         );
-        outColor = texture(texKitty, waterEffect);
+        vec4 color = vec4(Color, 1.0);
+        outColor = texture(texKitty, waterEffect) * color;
     }
 }

@@ -35,25 +35,63 @@ int main(void)
     Uint32 GL_RELOAD_FRAG = SDL_RegisterEvents(1);
     if (GL_RELOAD_FRAG == (Uint32) -1)
         err(1, "Couldn't register SDL_Event");
+    GLfloat vertices[] = {
+        -0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
+         0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+         0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
 
-    float vertices[] = {
-    //  Position        Gray   TexCoords
-        -0.5f,  0.5f,   1.0f,  0.0f,  0.0f,
-        0.5f,   0.5f,   1.0f,  1.0f,  0.0f,
-        0.5,    -0.5f,  1.0f,  1.0f,  1.0f,
-        -0.5f,  -0.5f,  1.0f,  0.0f,  1.0f,
+        -0.5f, -0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
+         0.5f, -0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
+
+        -0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+
+         0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+         0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
+         0.5f, -0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
+         0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+
+        -0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+         0.5f, -0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+         0.5f, -0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
+
+        -0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
+         0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f
     };
-    int vertexSize = 5*sizeof(float);
-    int coordSize = 2;
-    void* colorOffset = (void*)(2*sizeof(float));
-    int colorSize = 1;
-    void* texCoordOffset = (void*)(3*sizeof(float));
+    int vertexSize = 8*sizeof(GLfloat);
+    int coordSize = 3;
+    void* colorOffset = (void*)(3*sizeof(float));
+    int colorSize = 3;
+    void* texCoordOffset = (void*)(6*sizeof(float));
     int texCoordSize = 2;
 
-    GLuint elements[] = {
-        0,1,2,
-        2,3,0
-    };
+    /*GLuint elements[] = {*/
+        /*0,1,2,*/
+        /*2,3,0*/
+    /*};*/
+
+    // enable depth test
+    glEnable(GL_DEPTH_TEST);
 
     // create and bind vertex array object
     GLuint vao;
@@ -67,11 +105,11 @@ int main(void)
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     // crete element buffer object
-    GLuint ebo;
-    glGenBuffers(1, &ebo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-            sizeof(elements), elements, GL_STATIC_DRAW);
+    /*GLuint ebo;*/
+    /*glGenBuffers(1, &ebo);*/
+    /*glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);*/
+    /*glBufferData(GL_ELEMENT_ARRAY_BUFFER,*/
+            /*sizeof(elements), elements, GL_STATIC_DRAW);*/
 
     // create shaders
     GLuint shaders[] = {
@@ -117,7 +155,7 @@ int main(void)
     graphene_matrix_init_identity(&model);
 
     graphene_vec3_t rotAxis;
-    graphene_vec3_init(&rotAxis, 0, 0, 1);
+    graphene_vec3_init(&rotAxis, 0, 1, 0);
 
     // 3D stuff!!
     GLuint uniView = glGetUniformLocation(shaderProgram, "view");
@@ -129,7 +167,7 @@ int main(void)
     graphene_vec3_t up;
     graphene_matrix_init_look_at(
         &view,
-        graphene_vec3_init(&eye, 0.0, 0.0, -1.4),
+        graphene_vec3_init(&eye, 0.0, 1.5, -2.0),
         graphene_vec3_init(&center, 0, 0, 0),
         graphene_vec3_init(&up, 0.0, 1.0, 0.0)
     );
@@ -200,7 +238,7 @@ int main(void)
         }
 
         glClearColor(0x0, 0x0, 0x0, 0xFF);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
         uptime = SDL_GetTicks()/1000.0;
         /*fprintf(stderr, "%d\n", uptime);*/
@@ -210,11 +248,11 @@ int main(void)
         lasttime = uptime;
 
         // rotate
-        /*graphene_matrix_rotate(*/
-            /*&model,*/
-            /*(dt) * 45,*/
-            /*&rotAxis*/
-        /*);*/
+        graphene_matrix_rotate(
+            &model,
+            (dt) * 45,
+            &rotAxis
+        );
 
         /*GLfloat s = 1 + sin(uptime) * 0.01;*/
         /*graphene_matrix_scale(&model, s,s,s);*/
@@ -227,7 +265,8 @@ int main(void)
         glUniformMatrix4fv(uniTrans, 1, GL_FALSE, (float *)&model);
 
 
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        /*glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);*/
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
         SDL_GL_SwapWindow(win);
 
